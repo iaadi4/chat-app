@@ -9,10 +9,14 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
   name     String
-  email    String @unique
-  password String
+  email    String  @unique
+  password String?
+
+  isVerified Boolean @default(false)
+  provider   String  @default("local")
+  googleId   String? @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -22,6 +26,16 @@ model User {
   chats           Chat[]
 
   @@index([createdAt])
+}
+
+model VerificationToken {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  token     String   @unique
+  email     String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
 }
 
 model Conversation {
