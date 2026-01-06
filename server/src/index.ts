@@ -1,3 +1,4 @@
+import "express-async-errors";
 import app from "./app";
 import { ENV_VARIABLES } from "./configs/env-variables.config";
 import { logger } from "./utils/logger.util";
