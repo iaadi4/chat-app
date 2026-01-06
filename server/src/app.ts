@@ -5,13 +5,14 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import pinoHttp from "pino-http";
 
-import { ENV_VARIABLES } from "./configs/env-variables.config";
+import { ENV_VARIABLES } from "./config/env-variables.config";
 import { logger } from "./utils/logger.util";
 import {
   prometheusMiddleware,
-  prometheusRegister
+  prometheusRegister,
 } from "./middlewares/prometheus.middleware";
 import { errorMiddleware } from "./middlewares/error.middleware";
+import router from "./routes";
 
 const app = express();
 
@@ -26,7 +27,7 @@ app.use(cookieParser());
 app.use(
   cors({
     origin: ENV_VARIABLES.ALLOWED_ORIGINS,
-    credentials: true
+    credentials: true,
   })
 );
 
@@ -34,7 +35,7 @@ app.use(
 app.use(
   pinoHttp({
     logger,
-    genReqId: () => crypto.randomUUID()
+    genReqId: () => crypto.randomUUID(),
   })
 );
 
@@ -47,7 +48,7 @@ app.use(
     windowMs: 15 * 60 * 1000,
     max: 100,
     standardHeaders: true,
-    legacyHeaders: false
+    legacyHeaders: false,
   })
 );
 
@@ -58,6 +59,8 @@ app.use(prometheusMiddleware);
 app.get("/", (_, res) => {
   res.send("Hello, World!");
 });
+
+app.use("/api", router);
 
 if (ENV_VARIABLES.METRICS_ENABLED) {
   app.get("/metrics", async (_, res) => {
