@@ -1,6 +1,9 @@
 import app from "./app";
 import { ENV_VARIABLES } from "./configs/env-variables.config";
 import { logger } from "./utils/logger.util";
+import { connectDB } from "./configs/db.config";
+
+connectDB();
 
 const server = app.listen(ENV_VARIABLES.PORT, () => {
   logger.info(`Server running on port ${ENV_VARIABLES.PORT}`);
