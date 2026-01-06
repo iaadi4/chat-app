@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  email    String @unique
+  password String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  conversationIds String[]       @db.ObjectId
+  conversations   Conversation[] @relation(fields: [conversationIds], references: [id])
+  chats           Chat[]
+
+  @@index([createdAt])
+}
+
+model Conversation {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  participantIds String[] @db.ObjectId
+  participants   User[]   @relation(fields: [participantIds], references: [id])
+
+  chats Chat[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([participantIds])
+  @@index([createdAt])
+}
+
+model Chat {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  message String
+
+  conversationId String       @db.ObjectId
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  senderId       String       @db.ObjectId
+  sender         User         @relation(fields: [senderId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([conversationId, createdAt])
+  @@index([senderId])
+}
