@@ -1,7 +1,7 @@
 import { MongoClient, Db } from "mongodb";
 
 const MONGODB_URI = process.env.DATABASE_URL || "mongodb://localhost:27017";
-const DATABASE_NAME = process.env.DATABASE_NAME || "chat_app";
+const DATABASE_NAME = process.env.DATABASE_NAME || "chat-app";
 
 let client: MongoClient | null = null;
 let db: Db | null = null;
