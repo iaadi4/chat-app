@@ -13,7 +13,7 @@ export async function sendVerificationEmail(
   email: string,
   token: string
 ): Promise<void> {
-  const verificationUrl = `${ENV_VARIABLES.FRONTEND_URL}/verify-email?token=${token}`;
+  const verificationUrl = `${ENV_VARIABLES.FRONTEND_URL}/verify-email/${token}`;
 
   await transporter.sendMail({
     from: ENV_VARIABLES.EMAIL_FROM,

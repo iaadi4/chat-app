@@ -107,7 +107,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
     data: { isVerified: true },
   });
 
-  await prisma.verificationToken.delete({ where: { token } });
+  await prisma.verificationToken.deleteMany({ where: { token } });
 
   return Send.success(res, null, "Email verified successfully!");
 };
