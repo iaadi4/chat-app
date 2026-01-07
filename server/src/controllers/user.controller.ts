@@ -211,3 +211,43 @@ export const getUserById = async (req: Request, res: Response) => {
 
   return Send.success(res, user, "User retrieved successfully");
 };
+
+export const searchUsers = async (req: AuthenticatedRequest, res: Response) => {
+  const tokenUser = getUserFromToken(req);
+
+  if (!tokenUser) {
+    return Send.error(res, null, "Not authenticated", statusCode.UNAUTHORIZED);
+  }
+
+  const { email } = req.query;
+
+  if (!email || typeof email !== "string" || email.trim().length < 2) {
+    return Send.error(
+      res,
+      null,
+      "Email query must be at least 2 characters",
+      statusCode.BAD_REQUEST
+    );
+  }
+
+  const users = await prisma.user.findMany({
+    where: {
+      email: {
+        contains: email.trim(),
+        mode: "insensitive",
+      },
+      id: {
+        not: tokenUser.id,
+      },
+      isVerified: true,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+    },
+    take: 10,
+  });
+
+  return Send.success(res, users, "Users found");
+};
