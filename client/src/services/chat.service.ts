@@ -25,23 +25,39 @@ export const chatService = {
     return response.data;
   },
 
-  async uploadImage(file: File): Promise<ApiResponse<{ url: string }>> {
+  async uploadFile(file: File): Promise<
+    ApiResponse<{
+      url: string;
+      fileName: string;
+      fileType: string;
+    }>
+  > {
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("image", file); // Multer expects 'image' field name based on route config
     const response = await api.post("/upload", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
     return response.data;
   },
 
+  async uploadImage(file: File) {
+    return this.uploadFile(file);
+  },
+
   async sendMessage(
     conversationId: string,
     message: string,
-    image?: string
+    image?: string,
+    fileUrl?: string,
+    fileName?: string,
+    fileType?: string
   ): Promise<ApiResponse<Message>> {
     const response = await api.post(`/chat/${conversationId}`, {
       message,
       image,
+      fileUrl,
+      fileName,
+      fileType,
     });
     return response.data;
   },

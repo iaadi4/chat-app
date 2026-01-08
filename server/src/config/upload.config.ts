@@ -23,11 +23,8 @@ const fileFilter = (
   file: Express.Multer.File,
   cb: multer.FileFilterCallback
 ) => {
-  if (file.mimetype.startsWith("image/")) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
+  // Allow all files
+  cb(null, true);
 };
 
 export const upload = multer({

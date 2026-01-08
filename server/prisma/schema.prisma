@@ -16,7 +16,7 @@ model User {
 
   isVerified Boolean @default(false)
   provider   String  @default("local")
-  googleId   String? @unique
+  googleId   String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -54,9 +54,12 @@ model Conversation {
 }
 
 model Chat {
-  id      String  @id @default(auto()) @map("_id") @db.ObjectId
-  message String?
-  image   String?
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  message  String?
+  image    String?
+  fileUrl  String?
+  fileName String?
+  fileType String?
 
   conversationId String       @db.ObjectId
   conversation   Conversation @relation(fields: [conversationId], references: [id])

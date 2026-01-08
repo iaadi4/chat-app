@@ -104,11 +104,22 @@ export const initializeSocket = (httpServer: HttpServer): Server => {
 
     socket.on(
       "send_message",
-      async (data: { conversationId: string; message: string }) => {
+      async (data: {
+        conversationId: string;
+        message: string;
+        image?: string;
+        fileUrl?: string;
+        fileName?: string;
+        fileType?: string;
+      }) => {
         try {
           const chat = await prisma.chat.create({
             data: {
               message: data.message,
+              image: data.image,
+              fileUrl: data.fileUrl,
+              fileName: data.fileName,
+              fileType: data.fileType,
               conversationId: data.conversationId,
               senderId: userId,
             },

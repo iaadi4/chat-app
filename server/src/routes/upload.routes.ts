@@ -13,7 +13,15 @@ uploadRouter.post("/", upload.single("image"), (req, res) => {
 
   const fileUrl = `${ENV_VARIABLES.SERVER_URL}/uploads/${req.file.filename}`;
 
-  return Send.success(res, { url: fileUrl }, "Image uploaded successfully");
+  return Send.success(
+    res,
+    {
+      url: fileUrl,
+      fileName: req.file.originalname,
+      fileType: req.file.mimetype,
+    },
+    "File uploaded successfully"
+  );
 });
 
 export default uploadRouter;

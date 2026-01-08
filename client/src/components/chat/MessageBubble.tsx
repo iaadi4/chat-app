@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { formatMessageTime } from "@/lib/date";
+import { FileText } from "lucide-react";
 import type { Message } from "@/services/conversation.service";
 
 interface MessageBubbleProps {
@@ -46,6 +47,42 @@ export function MessageBubble({
               )}
               onClick={() => window.open(message.image!, "_blank")}
             />
+          )}
+
+          {message.fileUrl && (
+            <a
+              href={message.fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                "flex items-center gap-3 p-3 rounded-xl transition-colors mb-2 max-w-[240px]",
+                isOwn
+                  ? "bg-white/10 hover:bg-white/20 border-white/20"
+                  : "bg-zinc-700/50 hover:bg-zinc-700 border-zinc-600"
+              )}
+            >
+              <div
+                className={cn(
+                  "p-2 rounded-lg",
+                  isOwn ? "bg-white/20" : "bg-zinc-600"
+                )}
+              >
+                <FileText className="h-5 w-5" />
+              </div>
+              <div className="flex flex-col overflow-hidden">
+                <span className="text-sm font-medium truncate">
+                  {message.fileName || "Document"}
+                </span>
+                <span
+                  className={cn(
+                    "text-xs uppercase",
+                    isOwn ? "text-white/70" : "text-zinc-400"
+                  )}
+                >
+                  {message.fileType?.split("/")[1] || "FILE"}
+                </span>
+              </div>
+            </a>
           )}
           {message.message && (
             <p className="text-sm leading-relaxed whitespace-pre-wrap px-1.5">

@@ -13,6 +13,9 @@ export interface Message {
   senderId: string;
   createdAt: string;
   image?: string | null;
+  fileUrl?: string | null;
+  fileName?: string | null;
+  fileType?: string | null;
   sender: User;
 }
 

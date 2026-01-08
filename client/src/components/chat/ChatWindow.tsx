@@ -84,12 +84,21 @@ export function ChatWindow({ conversation, onBack }: ChatWindowProps) {
     }
   }, [loading, messages.length, scrollToBottom]);
 
-  const handleSend = async (message: string, image?: string) => {
+  const handleSend = async (
+    message: string,
+    image?: string,
+    fileUrl?: string,
+    fileName?: string,
+    fileType?: string
+  ) => {
     try {
       const response = await chatService.sendMessage(
         conversation.id,
         message,
-        image
+        image,
+        fileUrl,
+        fileName,
+        fileType
       );
       setMessages((prev) => {
         if (prev.some((m) => m.id === response.data.id)) {

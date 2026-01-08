@@ -1,19 +1,38 @@
 import { useState, useRef } from "react";
-import { Send, Image as ImageIcon, X, Loader2 } from "lucide-react";
+import {
+  Send,
+  Image as ImageIcon,
+  X,
+  Loader2,
+  Paperclip,
+  FileText,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { chatService } from "@/services/chat.service";
 import { toast } from "sonner";
 
 interface MessageInputProps {
-  onSend: (message: string, image?: string) => void;
+  onSend: (
+    message: string,
+    image?: string,
+    fileUrl?: string,
+    fileName?: string,
+    fileType?: string
+  ) => void;
   disabled?: boolean;
 }
 
 export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
   const [message, setMessage] = useState("");
   const [image, setImage] = useState<string | null>(null);
+  const [fileData, setFileData] = useState<{
+    url: string;
+    name: string;
+    type: string;
+  } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -46,24 +65,57 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
 
     setIsUploading(true);
     try {
-      const response = await chatService.uploadImage(file);
+      const response = await chatService.uploadFile(file);
       setImage(response.data.url);
     } catch (error) {
       console.error("Failed to upload image:", error);
       toast.error("Failed to upload image");
     } finally {
       setIsUploading(false);
-      // Reset input so same file can be selected again if needed
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File size too large (max 10MB)");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const response = await chatService.uploadFile(file);
+      setFileData({
+        url: response.data.url,
+        name: response.data.fileName,
+        type: response.data.fileType,
+      });
+    } catch (error) {
+      console.error("Failed to upload file:", error);
+      toast.error("Failed to upload file");
+    } finally {
+      setIsUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
   const handleSend = () => {
-    if ((!message.trim() && !image) || disabled || isUploading) return;
+    if ((!message.trim() && !image && !fileData) || disabled || isUploading)
+      return;
 
-    onSend(message.trim(), image || undefined);
+    onSend(
+      message.trim(),
+      image || undefined,
+      fileData?.url,
+      fileData?.name,
+      fileData?.type
+    );
     setMessage("");
     setImage(null);
+    setFileData(null);
 
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -95,16 +147,43 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
           </button>
         </div>
       )}
+      {fileData && (
+        <div className="mb-4 relative inline-flex items-center gap-3 p-3 bg-zinc-800 rounded-xl border border-zinc-700">
+          <div className="p-2 bg-zinc-700/50 rounded-lg">
+            <FileText className="h-5 w-5 text-zinc-300" />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-zinc-200 truncate max-w-[200px]">
+              {fileData.name}
+            </span>
+            <span className="text-xs text-zinc-500 uppercase">
+              {fileData.type.split("/")[1] || "FILE"}
+            </span>
+          </div>
+          <button
+            onClick={() => setFileData(null)}
+            className="absolute -top-2 -right-2 p-1 bg-zinc-800 rounded-full border border-zinc-700 text-zinc-400 hover:text-white transition-colors"
+          >
+            <X className="h-3 w-3" />
+          </button>
+        </div>
+      )}
       <div className="flex items-end gap-2">
         <input
           type="file"
-          ref={fileInputRef}
+          ref={imageInputRef}
           onChange={handleImageSelect}
           accept="image/*"
           className="hidden"
         />
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileSelect}
+          className="hidden"
+        />
         <button
-          onClick={() => fileInputRef.current?.click()}
+          onClick={() => imageInputRef.current?.click()}
           disabled={disabled || isUploading}
           className="p-3 bg-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -113,6 +192,13 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
           ) : (
             <ImageIcon className="h-5 w-5" />
           )}
+        </button>
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={disabled || isUploading}
+          className="p-3 bg-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Paperclip className="h-5 w-5" />
         </button>
         <div className="flex-1 relative">
           <textarea
@@ -132,10 +218,12 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
         </div>
         <button
           onClick={handleSend}
-          disabled={(!message.trim() && !image) || disabled || isUploading}
+          disabled={
+            (!message.trim() && !image && !fileData) || disabled || isUploading
+          }
           className={cn(
             "p-3 rounded-xl transition-all",
-            message.trim() || image
+            message.trim() || image || fileData
               ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white hover:from-violet-600 hover:to-blue-600"
               : "bg-zinc-800 text-zinc-400 cursor-not-allowed"
           )}

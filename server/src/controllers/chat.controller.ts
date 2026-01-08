@@ -37,13 +37,13 @@ const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
   }
 
   const { conversationId } = req.params;
-  const { message, image } = req.body;
+  const { message, image, fileUrl, fileName, fileType } = req.body;
 
-  if ((!message || !message.trim()) && !image) {
+  if ((!message || !message.trim()) && !image && !fileUrl) {
     return Send.error(
       res,
       null,
-      "Message or image is required",
+      "Message, image or file is required",
       statusCode.BAD_REQUEST
     );
   }
@@ -70,6 +70,9 @@ const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
     data: {
       message: message?.trim() || "",
       image: image || null,
+      fileUrl: fileUrl || null,
+      fileName: fileName || null,
+      fileType: fileType || null,
       conversationId,
       senderId: tokenUser.id,
     },
