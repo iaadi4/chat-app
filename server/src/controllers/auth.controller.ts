@@ -13,7 +13,7 @@ import { OAuth2Client } from "google-auth-library";
 const googleClient = new OAuth2Client(
   ENV_VARIABLES.GOOGLE_CLIENT_ID,
   ENV_VARIABLES.GOOGLE_CLIENT_SECRET,
-  ENV_VARIABLES.GOOGLE_CALLBACK_URL
+  ENV_VARIABLES.CALLBACK_URL
 );
 
 function setAuthCookie(res: Response, user: { id: string; email: string }) {
