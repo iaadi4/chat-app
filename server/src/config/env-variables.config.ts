@@ -9,10 +9,7 @@ export const ENV_VARIABLES = {
 
   JWT_SECRET: process.env.JWT_SECRET || "your-secret-key",
 
-  SMTP_HOST: process.env.SMTP_HOST || "smtp.gmail.com",
-  SMTP_PORT: parseInt(process.env.SMTP_PORT || "587"),
-  SMTP_USER: process.env.GMAIL_USER || process.env.SMTP_USER || "",
-  SMTP_PASS: process.env.GMAIL_APP_PASS || process.env.SMTP_PASS || "",
+  MAILERSEND_API_KEY: process.env.MAILERSEND_API_KEY || "",
   EMAIL_FROM: process.env.EMAIL_FROM || "noreply@chat-app.com",
 
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || "",

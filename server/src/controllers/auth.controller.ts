@@ -152,11 +152,18 @@ export const resendVerification = async (req: Request, res: Response) => {
     },
   });
 
-  sendVerificationEmail(email, token).catch((error) => {
+  try {
+    await sendVerificationEmail(email, token);
+    return Send.success(res, null, "Verification email sent!");
+  } catch (error) {
     console.error("Failed to send verification email:", error);
-  });
-
-  return Send.success(res, null, "Verification email sent!");
+    return Send.error(
+      res,
+      null,
+      "Failed to send verification email",
+      statusCode.INTERNAL_SERVER_ERROR
+    );
+  }
 };
 
 export const login = async (req: Request, res: Response) => {

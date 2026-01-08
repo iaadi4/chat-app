@@ -1,27 +1,25 @@
-import nodemailer from "nodemailer";
+import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
 import { ENV_VARIABLES } from "../config/env-variables.config";
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  pool: true,
-  maxConnections: 1,
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASS,
-  },
+const mailerSend = new MailerSend({
+  apiKey: ENV_VARIABLES.MAILERSEND_API_KEY,
 });
+
+const sentFrom = new Sender(ENV_VARIABLES.EMAIL_FROM, "Chat App");
 
 export async function sendVerificationEmail(
   email: string,
   token: string
 ): Promise<void> {
   const verificationUrl = `${ENV_VARIABLES.FRONTEND_URL}/verify-email/${token}`;
+  const recipients = [new Recipient(email, "User")];
 
-  await transporter.sendMail({
-    from: ENV_VARIABLES.EMAIL_FROM,
-    to: email,
-    subject: "Verify your email - Chat App",
-    html: `
+  const emailParams = new EmailParams()
+    .setFrom(sentFrom)
+    .setTo(recipients)
+    .setSubject("Verify your email - Chat App")
+    .setHtml(
+      `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h1 style="color: #333; text-align: center;">Verify Your Email</h1>
         <p style="color: #666; font-size: 16px; text-align: center;">
@@ -42,8 +40,19 @@ export async function sendVerificationEmail(
           This link expires in 24 hours.
         </p>
       </div>
-    `,
-  });
+    `
+    )
+    .setText(
+      `Verify your email by clicking on the following link: ${verificationUrl}`
+    );
+
+  try {
+    const response = await mailerSend.email.send(emailParams);
+    console.log("Email sent successfully. Response:", response);
+  } catch (error) {
+    console.error("MailerSend Error:", JSON.stringify(error, null, 2));
+    throw error;
+  }
 }
 
 export async function sendPasswordResetEmail(
@@ -51,12 +60,14 @@ export async function sendPasswordResetEmail(
   token: string
 ): Promise<void> {
   const resetUrl = `${ENV_VARIABLES.FRONTEND_URL}/reset-password?token=${token}`;
+  const recipients = [new Recipient(email, "User")];
 
-  await transporter.sendMail({
-    from: ENV_VARIABLES.EMAIL_FROM,
-    to: email,
-    subject: "Reset your password - Chat App",
-    html: `
+  const emailParams = new EmailParams()
+    .setFrom(sentFrom)
+    .setTo(recipients)
+    .setSubject("Reset your password - Chat App")
+    .setHtml(
+      `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
         <h1 style="color: #333; text-align: center;">Reset Your Password</h1>
         <p style="color: #666; font-size: 16px; text-align: center;">
@@ -77,6 +88,11 @@ export async function sendPasswordResetEmail(
           This link expires in 1 hour.
         </p>
       </div>
-    `,
-  });
+    `
+    )
+    .setText(
+      `Reset your password by clicking on the following link: ${resetUrl}`
+    );
+
+  await mailerSend.email.send(emailParams);
 }
