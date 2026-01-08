@@ -3,6 +3,8 @@ import { ENV_VARIABLES } from "../config/env-variables.config";
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
+  pool: true,
+  maxConnections: 1,
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASS,
