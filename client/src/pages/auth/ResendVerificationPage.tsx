@@ -110,17 +110,17 @@ export function ResendVerificationPage() {
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-zinc-300">Email</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                  <FormControl>
                     <Input
                       placeholder="you@example.com"
                       type="email"
                       className="pl-10 bg-zinc-800/50 border-zinc-700 focus:border-violet-500 focus:ring-violet-500/20 text-zinc-100 placeholder:text-zinc-500"
                       {...field}
                     />
-                  </div>
-                </FormControl>
+                  </FormControl>
+                </div>
                 <FormMessage className="text-red-400" />
               </FormItem>
             )}

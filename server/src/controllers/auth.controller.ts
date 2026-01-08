@@ -67,7 +67,9 @@ export const register = async (req: Request, res: Response) => {
     },
   });
 
-  await sendVerificationEmail(email, token);
+  sendVerificationEmail(email, token).catch((error) => {
+    console.error("Failed to send verification email:", error);
+  });
 
   return Send.created(
     res,
@@ -150,7 +152,9 @@ export const resendVerification = async (req: Request, res: Response) => {
     },
   });
 
-  await sendVerificationEmail(email, token);
+  sendVerificationEmail(email, token).catch((error) => {
+    console.error("Failed to send verification email:", error);
+  });
 
   return Send.success(res, null, "Verification email sent!");
 };
