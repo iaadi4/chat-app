@@ -37,10 +37,15 @@ const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
   }
 
   const { conversationId } = req.params;
-  const { message } = req.body;
+  const { message, image } = req.body;
 
-  if (!message || !message.trim()) {
-    return Send.error(res, null, "Message is required", statusCode.BAD_REQUEST);
+  if ((!message || !message.trim()) && !image) {
+    return Send.error(
+      res,
+      null,
+      "Message or image is required",
+      statusCode.BAD_REQUEST
+    );
   }
 
   const conversation = await prisma.conversation.findFirst({
@@ -63,7 +68,8 @@ const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
 
   const chat = await prisma.chat.create({
     data: {
-      message: message.trim(),
+      message: message?.trim() || "",
+      image: image || null,
       conversationId,
       senderId: tokenUser.id,
     },

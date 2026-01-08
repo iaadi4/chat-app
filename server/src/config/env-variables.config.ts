@@ -22,4 +22,5 @@ export const ENV_VARIABLES = {
     "http://localhost:3000/api/auth/google/callback",
 
   FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:5173",
+  SERVER_URL: process.env.SERVER_URL || "http://localhost:3000",
 };

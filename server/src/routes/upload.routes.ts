@@ -1,0 +1,19 @@
+import { Router } from "express";
+import { upload } from "../config/upload.config";
+import Send from "../utils/response.util";
+import statusCode from "../utils/status-code.utils";
+import { ENV_VARIABLES } from "../config/env-variables.config";
+
+const uploadRouter = Router();
+
+uploadRouter.post("/", upload.single("image"), (req, res) => {
+  if (!req.file) {
+    return Send.error(res, null, "No file uploaded", statusCode.BAD_REQUEST);
+  }
+
+  const fileUrl = `${ENV_VARIABLES.SERVER_URL}/uploads/${req.file.filename}`;
+
+  return Send.success(res, { url: fileUrl }, "Image uploaded successfully");
+});
+
+export default uploadRouter;

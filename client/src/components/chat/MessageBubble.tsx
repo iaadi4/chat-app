@@ -30,15 +30,28 @@ export function MessageBubble({
       <div className={cn("flex flex-col", isOwn ? "items-end" : "items-start")}>
         <div
           className={cn(
-            "px-4 py-2.5 rounded-2xl break-words",
+            "flex flex-col gap-2 p-2.5 rounded-2xl",
             isOwn
               ? "bg-gradient-to-r from-violet-500 to-blue-500 text-white rounded-br-sm"
               : "bg-zinc-800 text-zinc-100 rounded-bl-sm"
           )}
         >
-          <p className="text-sm leading-relaxed whitespace-pre-wrap">
-            {message.message}
-          </p>
+          {message.image && (
+            <img
+              src={message.image}
+              alt="Shared image"
+              className={cn(
+                "max-w-[240px] rounded-lg cursor-pointer hover:opacity-90 transition-opacity",
+                message.message && "mb-2"
+              )}
+              onClick={() => window.open(message.image!, "_blank")}
+            />
+          )}
+          {message.message && (
+            <p className="text-sm leading-relaxed whitespace-pre-wrap px-1.5">
+              {message.message}
+            </p>
+          )}
         </div>
         <span className="text-[10px] text-zinc-500 mt-1 px-1">
           {formatMessageTime(message.createdAt)}

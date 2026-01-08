@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import pinoHttp from "pino-http";
+import path from "path";
 
 import { ENV_VARIABLES } from "./config/env-variables.config";
 import { logger } from "./utils/logger.util";
@@ -22,6 +23,7 @@ app.disable("x-powered-by");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // CORS
 app.use(

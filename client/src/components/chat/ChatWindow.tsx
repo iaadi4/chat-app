@@ -84,9 +84,13 @@ export function ChatWindow({ conversation, onBack }: ChatWindowProps) {
     }
   }, [loading, messages.length, scrollToBottom]);
 
-  const handleSend = async (message: string) => {
+  const handleSend = async (message: string, image?: string) => {
     try {
-      const response = await chatService.sendMessage(conversation.id, message);
+      const response = await chatService.sendMessage(
+        conversation.id,
+        message,
+        image
+      );
       setMessages((prev) => {
         if (prev.some((m) => m.id === response.data.id)) {
           return prev;

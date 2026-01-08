@@ -12,6 +12,7 @@ export interface Message {
   conversationId: string;
   senderId: string;
   createdAt: string;
+  image?: string | null;
   sender: User;
 }
 

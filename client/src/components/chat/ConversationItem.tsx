@@ -56,7 +56,8 @@ export function ConversationItem({
           )}
         </div>
         <p className="text-sm text-zinc-400 truncate">
-          {lastMessage?.message || "No messages yet"}
+          {lastMessage?.message ||
+            (lastMessage?.image ? "📷 Shared an image" : "No messages yet")}
         </p>
       </div>
     </button>

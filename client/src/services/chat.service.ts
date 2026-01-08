@@ -25,11 +25,24 @@ export const chatService = {
     return response.data;
   },
 
+  async uploadImage(file: File): Promise<ApiResponse<{ url: string }>> {
+    const formData = new FormData();
+    formData.append("image", file);
+    const response = await api.post("/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  },
+
   async sendMessage(
     conversationId: string,
-    message: string
+    message: string,
+    image?: string
   ): Promise<ApiResponse<Message>> {
-    const response = await api.post(`/chat/${conversationId}`, { message });
+    const response = await api.post(`/chat/${conversationId}`, {
+      message,
+      image,
+    });
     return response.data;
   },
 };
