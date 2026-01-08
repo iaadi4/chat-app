@@ -138,7 +138,7 @@ export const initializeSocket = (httpServer: HttpServer): Server => {
             select: { participantIds: true },
           });
 
-          conversation?.participantIds.forEach((participantId) => {
+          conversation?.participantIds.forEach((participantId: string) => {
             if (participantId !== userId) {
               io.to(`user:${participantId}`).emit("new_message_notification", {
                 conversationId: data.conversationId,

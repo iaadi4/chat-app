@@ -167,7 +167,7 @@ export const deleteUser = async (req: AuthenticatedRequest, res: Response) => {
 
   for (const conversation of userConversations) {
     const updatedParticipantIds = conversation.participantIds.filter(
-      (id) => id !== user.id
+      (id: string) => id !== user.id
     );
 
     if (updatedParticipantIds.length === 0) {

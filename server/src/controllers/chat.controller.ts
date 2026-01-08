@@ -98,7 +98,7 @@ const sendMessage = async (req: AuthenticatedRequest, res: Response) => {
       select: { participantIds: true },
     });
 
-    conversationData?.participantIds.forEach((participantId) => {
+    conversationData?.participantIds.forEach((participantId: string) => {
       if (participantId !== tokenUser.id) {
         io.to(`user:${participantId}`).emit("new_message_notification", {
           conversationId,
