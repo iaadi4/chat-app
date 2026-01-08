@@ -6,6 +6,7 @@ import {
   Loader2,
   Paperclip,
   FileText,
+  Video,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { chatService } from "@/services/chat.service";
@@ -31,9 +32,13 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
     type: string;
   } | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadingType, setUploadingType] = useState<
+    "image" | "file" | "video" | null
+  >(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
@@ -102,6 +107,38 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
     }
   };
 
+  const handleVideoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("video/")) {
+      toast.error("Please select a video file");
+      return;
+    }
+
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error("Video size too large (max 50MB)");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const response = await chatService.uploadFile(file);
+      setFileData({
+        url: response.data.url,
+        name: response.data.fileName,
+        type: response.data.fileType,
+      });
+    } catch (error) {
+      console.error("Failed to upload video:", error);
+      toast.error("Failed to upload video");
+    } finally {
+      setIsUploading(false);
+      setUploadingType(null);
+      if (videoInputRef.current) videoInputRef.current.value = "";
+    }
+  };
+
   const handleSend = () => {
     if ((!message.trim() && !image && !fileData) || disabled || isUploading)
       return;
@@ -150,7 +187,11 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
       {fileData && (
         <div className="mb-4 relative inline-flex items-center gap-3 p-3 bg-zinc-800 rounded-xl border border-zinc-700">
           <div className="p-2 bg-zinc-700/50 rounded-lg">
-            <FileText className="h-5 w-5 text-zinc-300" />
+            {fileData.type.startsWith("video/") ? (
+              <Video className="h-5 w-5 text-zinc-300" />
+            ) : (
+              <FileText className="h-5 w-5 text-zinc-300" />
+            )}
           </div>
           <div className="flex flex-col">
             <span className="text-sm font-medium text-zinc-200 truncate max-w-[200px]">
@@ -182,12 +223,19 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
           onChange={handleFileSelect}
           className="hidden"
         />
+        <input
+          type="file"
+          ref={videoInputRef}
+          onChange={handleVideoSelect}
+          accept="video/*"
+          className="hidden"
+        />
         <button
           onClick={() => imageInputRef.current?.click()}
           disabled={disabled || isUploading}
           className="p-3 bg-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isUploading ? (
+          {isUploading && uploadingType === "image" ? (
             <Loader2 className="h-5 w-5 animate-spin" />
           ) : (
             <ImageIcon className="h-5 w-5" />
@@ -198,7 +246,22 @@ export function MessageInput({ onSend, disabled = false }: MessageInputProps) {
           disabled={disabled || isUploading}
           className="p-3 bg-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Paperclip className="h-5 w-5" />
+          {isUploading && uploadingType === "file" ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Paperclip className="h-5 w-5" />
+          )}
+        </button>
+        <button
+          onClick={() => videoInputRef.current?.click()}
+          disabled={disabled || isUploading}
+          className="p-3 bg-zinc-800 rounded-xl text-zinc-400 hover:text-zinc-100 hover:bg-zinc-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isUploading && uploadingType === "video" ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Video className="h-5 w-5" />
+          )}
         </button>
         <div className="flex-1 relative">
           <textarea

@@ -49,7 +49,19 @@ export function MessageBubble({
             />
           )}
 
-          {message.fileUrl && (
+          {message.fileUrl && message.fileType?.startsWith("video/") && (
+            <div className="mb-2 max-w-[320px]">
+              <video
+                src={message.fileUrl}
+                controls
+                className="w-full rounded-lg border border-zinc-700 bg-black aspect-video"
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          )}
+
+          {message.fileUrl && !message.fileType?.startsWith("video/") && (
             <a
               href={message.fileUrl}
               target="_blank"

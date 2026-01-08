@@ -11,7 +11,7 @@ uploadRouter.post("/", upload.single("image"), (req, res) => {
     return Send.error(res, null, "No file uploaded", statusCode.BAD_REQUEST);
   }
 
-  const fileUrl = `${ENV_VARIABLES.SERVER_URL}/uploads/${req.file.filename}`;
+  const fileUrl = req.file.path;
 
   return Send.success(
     res,

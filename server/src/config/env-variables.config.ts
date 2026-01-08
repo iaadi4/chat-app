@@ -23,4 +23,8 @@ export const ENV_VARIABLES = {
 
   FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:5173",
   SERVER_URL: process.env.SERVER_URL || "http://localhost:3000",
+
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME || "",
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY || "",
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || "",
 };

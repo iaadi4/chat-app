@@ -56,8 +56,15 @@ export function ConversationItem({
           )}
         </div>
         <p className="text-sm text-zinc-400 truncate">
-          {lastMessage?.message ||
-            (lastMessage?.image ? "📷 Shared an image" : "No messages yet")}
+          {(() => {
+            if (!lastMessage) return "No messages yet";
+            if (lastMessage.message) return lastMessage.message;
+            if (lastMessage.image) return "📷 Shared an image";
+            if (lastMessage.fileType?.startsWith("video/"))
+              return "🎥 Shared a video";
+            if (lastMessage.fileUrl) return "📎 Shared a file";
+            return "No messages yet";
+          })()}
         </p>
       </div>
     </button>
