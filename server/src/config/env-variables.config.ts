@@ -2,6 +2,7 @@ import "dotenv/config";
 
 export const ENV_VARIABLES = {
   PORT: process.env.PORT || 3000,
+  NODE_ENV: process.env.NODE_ENV || "development",
   ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS?.split(",") || [
     "http://localhost:5173",
   ],

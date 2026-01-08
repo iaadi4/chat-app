@@ -28,7 +28,7 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 // CORS
 app.use(
   cors({
-    origin: ENV_VARIABLES.ALLOWED_ORIGINS,
+    origin: true,
     credentials: true,
   })
 );

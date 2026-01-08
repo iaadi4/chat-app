@@ -16,7 +16,11 @@ const googleClient = new OAuth2Client(
   ENV_VARIABLES.CALLBACK_URL
 );
 
-function setAuthCookie(res: Response, user: { id: string; email: string }) {
+function setAuthCookie(
+  res: Response,
+  user: { id: string; email: string },
+  secure: boolean
+) {
   const token = jwt.sign(
     { id: user.id, email: user.email },
     ENV_VARIABLES.JWT_SECRET,
@@ -25,8 +29,8 @@ function setAuthCookie(res: Response, user: { id: string; email: string }) {
 
   res.cookie("token", token, {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: secure,
+    sameSite: secure ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
@@ -191,7 +195,7 @@ export const login = async (req: Request, res: Response) => {
     );
   }
 
-  setAuthCookie(res, user);
+  setAuthCookie(res, user, req.secure);
 
   return Send.success(
     res,
@@ -265,7 +269,7 @@ export const googleCallback = async (req: Request, res: Response) => {
       });
     }
 
-    setAuthCookie(res, user);
+    setAuthCookie(res, user, req.secure);
 
     res.redirect(`${ENV_VARIABLES.FRONTEND_URL}/`);
   } catch (error) {
