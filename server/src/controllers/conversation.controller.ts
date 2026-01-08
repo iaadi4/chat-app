@@ -54,6 +54,19 @@ const createConversation = async (req: AuthenticatedRequest, res: Response) => {
   const newConversation = await prisma.conversation.create({
     data: {
       participantIds: [tokenUser.id, participantId],
+      participants: {
+        connect: [{ id: tokenUser.id }, { id: participantId }],
+      },
+    },
+    include: {
+      participants: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        },
+      },
+      chats: true,
     },
   });
 
