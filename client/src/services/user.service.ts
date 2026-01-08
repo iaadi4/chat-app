@@ -24,4 +24,20 @@ export const userService = {
     const response = await api.get(`/user/${id}`);
     return response.data;
   },
+
+  async updateProfile(data: {
+    name?: string;
+    password?: string;
+    currentPassword?: string;
+  }): Promise<ApiResponse<SearchUser>> {
+    const response = await api.patch("/user", data);
+    return response.data;
+  },
+
+  async deleteAccount(password?: string): Promise<ApiResponse<null>> {
+    const response = await api.delete("/user", {
+      data: { password },
+    });
+    return response.data;
+  },
 };

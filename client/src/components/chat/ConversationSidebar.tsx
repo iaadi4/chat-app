@@ -9,6 +9,7 @@ import {
   conversationService,
   type Conversation,
 } from "@/services/conversation.service";
+import { ProfileDialog } from "./ProfileDialog";
 
 interface ConversationSidebarProps {
   activeConversationId: string | null;
@@ -24,6 +25,7 @@ export function ConversationSidebar({
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isNewConversationOpen, setIsNewConversationOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const fetchConversations = useCallback(async () => {
@@ -136,7 +138,10 @@ export function ConversationSidebar({
       </ScrollArea>
 
       <div className="p-3 border-t border-zinc-800">
-        <div className="flex items-center gap-3 p-2 rounded-xl bg-zinc-800/30">
+        <button
+          onClick={() => setIsProfileOpen(true)}
+          className="flex items-center gap-3 p-2 rounded-xl bg-zinc-800/30 w-full hover:bg-zinc-800 transition-colors text-left"
+        >
           <div className="h-10 w-10 rounded-full bg-gradient-to-br from-violet-500 to-blue-500 flex items-center justify-center text-white font-medium">
             {user?.name?.charAt(0).toUpperCase()}
           </div>
@@ -144,7 +149,7 @@ export function ConversationSidebar({
             <p className="font-medium text-zinc-100 truncate">{user?.name}</p>
             <p className="text-xs text-zinc-500 truncate">{user?.email}</p>
           </div>
-        </div>
+        </button>
       </div>
 
       <NewConversationDialog
@@ -152,6 +157,8 @@ export function ConversationSidebar({
         onOpenChange={setIsNewConversationOpen}
         onConversationCreated={handleConversationCreated}
       />
+
+      <ProfileDialog open={isProfileOpen} onOpenChange={setIsProfileOpen} />
     </div>
   );
 }
